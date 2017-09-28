@@ -32,7 +32,7 @@ def process_image(img):
 
 if __name__ == '__main__':
     #ffmpeg_extract_subclip("project_video.mp4", 0, 8, targetname="test_video_4.mp4")
-    video = False
+    video = True
     if video:   
         video_fname = 'project_video.mp4'
         tracker = VehicleTracker(clf)
