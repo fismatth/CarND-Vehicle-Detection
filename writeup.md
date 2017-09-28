@@ -51,17 +51,17 @@ Then, the classifier is trained and the trained classifier together with the sca
 The main issue was to find good parameters for the feature extraction. With the following parameters (see also [constants.py](constants.py)), I got a validation accuracy over 99%:
 
 * color features:
- * color space: BGR
- * image size: 16 x 16
+ *  color space: BGR
+ *  image size: 16 x 16
 * color histogram features:
- * color space: BGR
- * number of bins: 64
+ *  color space: BGR
+ *  number of bins: 64
 * HOG features
- * color space: 'YCrCb'
- * orientations: 9
- * pixels per celss: 8x8
- * celss per block: 2x2
- * used channels: all
+ *  color space: 'YCrCb'
+ *  orientations: 9
+ *  pixels per celss: 8x8
+ *  celss per block: 2x2
+ *  used channels: all
 
 
 ### Sliding Window Search
