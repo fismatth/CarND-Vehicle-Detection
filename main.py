@@ -27,7 +27,7 @@ def process_image(img):
     # undistor image like in Advance-Lane-Lines project
     undistorted = undistorter(img)
     # update the tracked objects
-    return tracker(undistorted, True, True)
+    return tracker(undistorted)
 
 
 if __name__ == '__main__':
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         clip1 = VideoFileClip(video_fname)
         white_clip = clip1.fl_image(process_image)
         # since threshold 0.4 only normalize if max > 1.0
-        white_clip.write_videofile(video_fname.replace('.mp4', '_annotated_vis_filtered.mp4'), audio=False)
+        white_clip.write_videofile(video_fname.replace('.mp4', '_annotated.mp4'), audio=False)
     else:
         for fname in glob.glob('test_images/test*.jpg'):
             tracker = VehicleTracker(clf)
@@ -48,5 +48,5 @@ if __name__ == '__main__':
             cv2.imwrite('output_images/sliding_windows.jpg', sliding_windows_img)
             result_img = process_image(img)
             #result_img = draw_boxes(img, detections)
-            cv2.imwrite(fname.replace('test_images', 'output_images').replace('.jpg', '_threshold_heatmap.jpg'), result_img)
+            cv2.imwrite(fname.replace('test_images', 'output_images').replace('.jpg', '_heatmap.jpg'), result_img)
         

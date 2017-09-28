@@ -132,7 +132,7 @@ class VehicleTracker:
             self.heatmap /= min_scaling
         # apply threshold to global heat map
         threshold_heatmap = apply_threshold(self.heatmap, 0.5)
-        return threshold_heatmap * 255
+        #return threshold_heatmap * 255
         #return cv2.addWeighted(img, 1.0, np.array(cv2.merge((threshold_heatmap * 255, threshold_heatmap * 255, threshold_heatmap * 255)), np.uint8), 1.0, 0)
         # label heat map regions and compute bounding boxes
         labels = label(threshold_heatmap)

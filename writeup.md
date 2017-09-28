@@ -1,8 +1,8 @@
-##Writeup
+# Writeup
 
 ---
 
-**Vehicle Detection Project**
+## Vehicle Detection Project
 
 The goals / steps of this project are the following:
 
@@ -28,47 +28,47 @@ The goals / steps of this project are the following:
 [final_video]: ./project_video_annotated.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
 
-###Histogram of Oriented Gradients (HOG)
+## Histogram of Oriented Gradients (HOG)
 
-####1. Extracting features from images
+### 1. Extracting features from images
 
-The code to extract features in the images is contained in [./extract_features.py](extract_features.py). I used a combination of color features, color histogram features and HOG features.
+The code to extract features in the images is contained in [extract_features.py](extract_features.py). I used a combination of color features, color histogram features and HOG features.
 To extract features from a single image the function single_img_features() is used. The function extract_features() computes the features for a list of filenames. 
 The different parameters have been tuned by training a classifier with the extracted features (optimizing the validation accuracy).
 
 
-####2. Train classifier and optimize parameters
+### 2. Train classifier and optimize parameters
 
-The code to train a classifier is contained in [./classify.py](classify.py). I trained a linear SVM, using the GridSearchCV class provided by sklearn to automatically optimize the gamma and C parameter.
+The code to train a classifier is contained in [classify.py](classify.py). I trained a linear SVM, using the GridSearchCV class provided by sklearn to automatically optimize the gamma and C parameter.
 For the values I tried, gamma = 0.1 and C = 1 worked best. 
 The classifier extracts the features of the whole data set of vehicles and non-vehicles and normalizes them using the StandardScaler class from sklearn. The data is then splitted into a training and validation set.
 Then, the classifier is trained and the trained classifier together with the scaling is stored to a pickle file. 
 
-The main issue was to find good parameters for the feature extraction. With the following parameters (see also [./constants.py](constants.py)), I got a validation accuracy over 99%:
+The main issue was to find good parameters for the feature extraction. With the following parameters (see also [constants.py](constants.py)), I got a validation accuracy over 99%:
 
 * color features:
-** color space: BGR
-** image size: 16 x 16
+ * color space: BGR
+ * image size: 16 x 16
 * color histogram features:
-** color space: BGR
-** number of bins: 64
+ * color space: BGR
+ * number of bins: 64
 * HOG features
-** color space: 'YCrCb'
-** orientations: 9
-** pixels per celss: 8x8
-** celss per block: 2x2
-** used channels: all
+ * color space: 'YCrCb'
+ * orientations: 9
+ * pixels per celss: 8x8
+ * celss per block: 2x2
+ * used channels: all
 
 
-###Sliding Window Search
+### Sliding Window Search
 
-####1. Scales and overlaps
+#### 1. Scales and overlaps
 
-To generate a list of windows to search on, the function slide_window() in [./tracking.py](tracking.py) is used. Parameters for the different scales and overlaps as well as start and stop positions are defined in [./constants.py](constants.py).
+To generate a list of windows to search on, the function slide_window() in [tracking.py](tracking.py) is used. Parameters for the different scales and overlaps as well as start and stop positions are defined in [constants.py](constants.py).
 There are two main points I considered to tune these parameters:
 * There have to be enough sliding windows to detect cars of different sizes at different places
 * There should not be more windows than needed to reduce number of false positives
@@ -80,7 +80,7 @@ Here is an image showing all sliding windows:
 
 ![alt text][img_sliding_windows]
 
-####2. Detections on single images
+### 2. Detections on single images
 
 Here are some example images showing the sliding windows which have been classified as cars:
 
@@ -95,16 +95,16 @@ Here are some example images showing the sliding windows which have been classif
 
 ### Video Implementation
 
-####1. Final video output.
+#### 1. Final video output.
 
 Here's a [link to my video result](./project_video_annotated.mp4) with estimated bounding boxes drawn around detected cars.
 
 
-####2. Tracking and filtering
+#### 2. Tracking and filtering
 
-The tracking is implemented in the VehicleTracker class in [./tracking.py](tracking.py). The VehicleTracker manages a list of objects of the TrackedVehicle class, which can be accepted as cars or not (yet) - depending on a score value.
+The tracking is implemented in the VehicleTracker class in [tracking.py](tracking.py). The VehicleTracker manages a list of objects of the TrackedVehicle class, which can be accepted as cars or not (yet) - depending on a score value.
 For each frame, we run the sliding window search and generate a heat map using the bounding boxes classified as cars. As bounding boxes can also contain areas which are not part of the car, we update the heat map in a weighted fashion,
-such that the most heat is added at the center of the bounding box (using the tensor product of 1D linear hat functions - see function add_heat_weighted() in [./tracking.py](tracking.py)). 
+such that the most heat is added at the center of the bounding box (using the tensor product of 1D linear hat functions - see function add_heat_weighted() in [tracking.py](tracking.py)). 
 The heat map is then normalized (especially to reduce the influence of frames with many (possibly false) detections) and added to the global heat map, which is also normalized.
 Afterwards, a threshold is applied to filter out single detections (which are probably false positives). The thresholded heat map is labeled using scipy.ndimage.measurements.label() and bounding boxes around the labeled areas are computed.
 The resulting bounding boxes are then used to update already tracked objects (function update() of class TrackedVehicle). 
@@ -143,18 +143,17 @@ Video showing the currently tracked objects with their score (red boxes are not 
 
 ---
 
-###Discussion
+### Discussion
 
 Here are some main issues of the current implementation:
 * Cars are partially detected quite late due to the conservative acceptance criterias
 * Bounding boxes only cover part of the tracked car or cover larger areas which don't belong to the car
 * Partially hidden cars are not detected (detections are matched to car in front)
-* Delayed movement for accelerating cars
+* Delayed movement of estimated bounding boxes for accelerating cars
 
 We could try the following to improve:
 * Add sliding windows locally around tracked cars to get better bounding box estimations
 * Use more advanced techniques to match detections (e.g. re-use features like color histogram to verify that bounding boxes include the same car)
-* Use estimated movement of tracked cars to update global heat map (move heat in that direction)
 * Optimize classifier (tune parameters, try different features)
 * With a better working pipeline overall, we should be able to use less conservative acceptance criterias (especially lower threshold for score)
 
